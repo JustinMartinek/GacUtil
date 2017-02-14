@@ -10,7 +10,7 @@ namespace GacUtil
     {
         public static void Main(string[] args)
         {
-            if (args.Length.Equals(0)||args[args.Length - 1] == "-h" )
+            if (args.Length.Equals(0)||args[args.Length - 1].ToLower() == "/h" )
             {
                 Console.WriteLine("Beginning Help:");
                 Console.WriteLine(Environment.NewLine);
@@ -18,20 +18,20 @@ namespace GacUtil
                 Console.WriteLine(Environment.NewLine);
                 Console.WriteLine("Use the following flags to gac an assembly");
                 Console.WriteLine("==Parameter 1==");
-                Console.WriteLine("-i:      Installs the assembly");
-                Console.WriteLine("-u:      Uninstalls the assembly");
+                Console.WriteLine("/i:      Installs the assembly");
+                Console.WriteLine("/u:      Uninstalls the assembly");
                 Console.WriteLine(Environment.NewLine);
                 Console.WriteLine("==Parameter 2==");
                 Console.WriteLine("Full path to the assembly");
                 Console.WriteLine(Environment.NewLine);
                 Console.WriteLine("==Parameter 3==");
-                Console.WriteLine("-f:      flag to force the installation");
+                Console.WriteLine("/f:      flag to force the installation");
                 Console.WriteLine(Environment.NewLine);
                 Console.WriteLine("EX: ");
-                Console.WriteLine("GacUtil.exe -i C:/Folder/installable.dll -f");
+                Console.WriteLine("GacUtil.exe /i C:/Folder/installable.dll /f");
 
             }
-            else if (args[0] == "-i")
+            else if (args[0].ToLower() == "/i")
             {
                 Console.WriteLine("Installing Assembly");
                 if (args.Count() < 2)
@@ -41,7 +41,7 @@ namespace GacUtil
                 else
                 {
                     bool flag = false;
-                    if (args.Count() > 2 && args[2] == "-f")
+                    if (args.Count() > 2 && args[2].ToLower() == "/f")
                         flag = true;
                     if (flag)
                         Console.WriteLine("Flag used to force assembly installation");
@@ -56,7 +56,7 @@ namespace GacUtil
                     }
                 }
             }
-            else if (args[0] == "-u")
+            else if (args[0].ToLower() == "/u")
             {
                 Console.WriteLine("Uninstalling Assembly");
                 if (args.Count() < 2)
@@ -79,7 +79,7 @@ namespace GacUtil
             }
             else
             {
-                Console.WriteLine("flag undefined.  Use -h for help");
+                Console.WriteLine("flag undefined.  Use /h for help");
             }
         }
     }
