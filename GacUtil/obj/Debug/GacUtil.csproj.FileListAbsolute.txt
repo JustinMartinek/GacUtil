@@ -1,0 +1,5 @@
+C:\Development\TFS\Projects\GacUtil\GacUtil\bin\Debug\GacUtil.exe.config
+C:\Development\TFS\Projects\GacUtil\GacUtil\bin\Debug\GacUtil.exe
+C:\Development\TFS\Projects\GacUtil\GacUtil\bin\Debug\GacUtil.pdb
+C:\Development\TFS\Projects\GacUtil\GacUtil\obj\Debug\GacUtil.exe
+C:\Development\TFS\Projects\GacUtil\GacUtil\obj\Debug\GacUtil.pdb
