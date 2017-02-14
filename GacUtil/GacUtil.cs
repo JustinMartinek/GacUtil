@@ -1,67 +1,87 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace GacUtil
 {
-
-    static class GacUtil
+    public class GacUtil
     {
-
-        public static void InstallAssembly(string path, bool forceRefresh)
+        public static void Main(string[] args)
         {
-            IAssemblyCache iac = null;
-            CreateAssemblyCache(out iac, 0);
-            try
+            if (args.Length.Equals(0)||args[args.Length - 1] == "-h" )
             {
-                uint flags = forceRefresh ? 2u : 1u;
-                int hr = iac.InstallAssembly(flags, path, IntPtr.Zero);
-                if (hr < 0) Marshal.ThrowExceptionForHR(hr);
-            }
-            finally
-            {
-                Marshal.FinalReleaseComObject(iac);
-            }
-        }
+                Console.WriteLine("Beginning Help:");
+                Console.WriteLine(Environment.NewLine);
+                Console.WriteLine("*REMEMBER TO RUN WITH ELEVATED PERMISSIONS!*");
+                Console.WriteLine(Environment.NewLine);
+                Console.WriteLine("Use the following flags to gac an assembly");
+                Console.WriteLine("==Parameter 1==");
+                Console.WriteLine("-i:      Installs the assembly");
+                Console.WriteLine("-u:      Uninstalls the assembly");
+                Console.WriteLine(Environment.NewLine);
+                Console.WriteLine("==Parameter 2==");
+                Console.WriteLine("Full path to the assembly");
+                Console.WriteLine(Environment.NewLine);
+                Console.WriteLine("==Parameter 3==");
+                Console.WriteLine("-f:      flag to force the installation");
+                Console.WriteLine(Environment.NewLine);
+                Console.WriteLine("EX: ");
+                Console.WriteLine("GacUtil.exe -i C:/Folder/installable.dll -f");
 
-        public static void UninstallAssembly(string displayName)
-        {
-            IAssemblyCache iac = null;
-            CreateAssemblyCache(out iac, 0);
-            try
+            }
+            else if (args[0] == "-i")
             {
-                uint whatHappened;
-                int hr = iac.UninstallAssembly(0, displayName, IntPtr.Zero, out whatHappened);
-                if (hr < 0) Marshal.ThrowExceptionForHR(hr);
-                switch (whatHappened)
+                Console.WriteLine("Installing Assembly");
+                if (args.Count() < 2)
                 {
-                    case 2: throw new InvalidOperationException("Assembly still in use");
-                    case 5: throw new InvalidOperationException("Assembly still has install references");
-                    case 6: throw new System.IO.FileNotFoundException();    // Not actually raised
+                    Console.WriteLine("Not enough parameters supplied.  Please consult the help functionality.");
+                }
+                else
+                {
+                    bool flag = false;
+                    if (args.Count() > 2 && args[2] == "-f")
+                        flag = true;
+                    if (flag)
+                        Console.WriteLine("Flag used to force assembly installation");
+                    try
+                    {
+                        GacUtilHelper.InstallAssembly(args[1], flag);
+                        Console.WriteLine("Installation Complete");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Installation failed: {ex.ToString()}");
+                    }
                 }
             }
-            finally
+            else if (args[0] == "-u")
             {
-                Marshal.FinalReleaseComObject(iac);
+                Console.WriteLine("Uninstalling Assembly");
+                if (args.Count() < 2)
+                {
+                    Console.WriteLine("Not enough parameters supplied.  Please consult the help functionality.");
+                }
+                else
+                {
+                    try
+                    {
+                        GacUtilHelper.UninstallAssembly(args[1]);
+                        Console.WriteLine("Uninstall Complete");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Uninstallation failed: {ex.ToString()}");
+                    }
+                    
+                }
+            }
+            else
+            {
+                Console.WriteLine("flag undefined.  Use -h for help");
             }
         }
-
-
-        [ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("e707dcde-d1cd-11d2-bab9-00c04f8eceae")]
-        internal interface IAssemblyCache
-        {
-            [PreserveSig]
-            int UninstallAssembly(uint fags, [MarshalAs(UnmanagedType.LPWStr)] string assemblyName, IntPtr pvReserved, out uint pulDisposition);
-            [PreserveSig]
-            int QueryAssemblyInfo(uint dwFlags, [MarshalAs(UnmanagedType.LPWStr)] string pszAssemblyName, IntPtr pAsmInfo);
-            [PreserveSig]
-            int CreateAssemblyCacheItem(/* arguments omitted */);
-            [PreserveSig]
-            int CreateAssemblyScavenger(out object ppAsmScavenger);
-            [PreserveSig]
-            int InstallAssembly(uint dwFlags, [MarshalAs(UnmanagedType.LPWStr)] string pszManifestFilePath, IntPtr pvReserved);
-        }
-
-        [DllImport("clr.dll", PreserveSig = false)]  // NOTE: use "mscorwks.dll" for 3 and below and "clr.dll" in .NET 4+
-        internal static extern void CreateAssemblyCache(out IAssemblyCache ppAsmCache, int reserved);
     }
+
 }
